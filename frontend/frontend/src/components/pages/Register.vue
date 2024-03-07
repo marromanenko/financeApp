@@ -233,7 +233,7 @@ export default {
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="formData.email" required>
 
-      <label for="password">Password:</label>
+      <label for="password">Пароль:</label>
       <input type="password" id="password" v-model="formData.password" required>
       
       <label for="sex">Стать:</label>
