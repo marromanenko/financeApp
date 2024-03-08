@@ -1,31 +1,10 @@
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.models import Group
 from rest_framework import permissions, viewsets
 from rest_framework.request import Request
 from django.contrib.auth.hashers import make_password, check_password
-
 from .models import CustomUser, Transport, Accomodation
-
 from .serializers import CustomUserSerializer, TransportSerializer, AccomodationSerializer
 from rest_framework.permissions import IsAuthenticated
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited.
-#     """
-#     queryset = User.objects.all().order_by('-date_joined')
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-
-# class GroupViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows groups to be viewed or edited.
-#     """
-#     queryset = Group.objects.all()
-#     serializer_class = GroupSerializer
-#     permission_classes = [permissions.IsAuthenticated]
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -36,15 +15,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 from .models import CustomUser
-
-# Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate
-
-# serilaizer
 from .serializers import UserRegisterSerializer
 from .serializers import UserLoginSerializer
 
@@ -85,7 +59,7 @@ class UserRegisterAPIView(APIView):
                 'user': serializer.data,
                 'token': Token.objects.get(user=CustomUser.objects.get(username=serializer.data['username'])).key
             }
-            return Response(response, status=status.HTTP_200_OK)
+            return Response(response, status=status.HTTP_201_CREATED)
         raise ValidationError(
             serializer.errors, code=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -129,3 +103,49 @@ class AccomodationViewSet(viewsets.ViewSet):
         serializer=AccomodationSerializer(instance=post)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class DescriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        description = "Додаток для відстеження витрат і управління бюджетом - це зручний інструмент для користувачів, який дозволяє їм керувати своїми фінансами. Основна мета цього додатка полягає в тому, щоб допомогти користувачам відстежувати свої витрати, категоризувати їх і порівнювати зі своїм бюджетом. "
+        info = {"description": description}
+        print(request.headers)
+        return Response(info)
+
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        token = request.headers['Authorization'].split()[1]
+        user_id = Token.objects.get(key=token).user_id
+        user = CustomUser.objects.get(id=user_id)
+        info = { "username": user.username,
+                 "email": user.email,
+                 "sex": user.sex,
+                 "dob": user.birthDate}
+        return Response(info)
+
+class ComputeView(APIView):
+
+    def post(self, request):
+
+        income = self.request.query_params.get('income')
+        accomodationId = self.request.query_params.get('accomodation')
+        accomodation = Accomodation.objects.get(pk=accomodationId).amount
+        utilities = self.request.query_params.get('utilities')
+        food = self.request.query_params.get('food')
+        transportationId = self.request.query_params.get('transportation')
+        transportation = Transport.objects.get(pk=transportationId).amount
+        entertainment = self.request.query_params.get('entertainment')
+
+        if(int(income)-accomodation-int(utilities)-int(food)-transportation-int(entertainment)>=0):
+            info = {"result": "success"}
+        else:
+            info = {"result": "error"}
+
+
+
+        return Response(info)

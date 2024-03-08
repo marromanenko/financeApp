@@ -1,21 +1,12 @@
-from django.contrib.auth.models import Group
-from rest_framework import serializers
 from .models import CustomUser, Transport, Accomodation
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 
-
-# class GroupSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Group
-#         fields = ['url', 'name']
-
 class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        # fields = 'all'
         exclude = ('password', 'groups', 'is_staff', 'is_superuser', 'last_login', 'user_permissions', 'is_active', 'date_joined')
         extra_kwargs = {"course": {"required": False, "allow_null": True}}
 
@@ -39,11 +30,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField()
-    #first_name = serializers.CharField()
-    #last_name = serializers.CharField()
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-    #password2 = serializers.CharField(write_only=True)
     sex = serializers.ChoiceField(choices=SEX)
     birthDate = serializers.DateField()
 
@@ -63,9 +51,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return email
 
     def validate(self, instance):
-        # if instance['password'] != instance['password2']:
-        #     raise ValidationError({"message": "Both password must match"})
-
         if CustomUser.objects.filter(email=instance['email']).exists():
             raise ValidationError({"message": "Email already taken!"})
 
@@ -73,7 +58,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         passowrd = validated_data.pop('password')
-        #passowrd2 = validated_data.pop('password2')
         user = CustomUser.objects.create(**validated_data)
         user.set_password(passowrd)
         user.save()
