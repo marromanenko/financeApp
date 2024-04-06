@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password, check_password
 
+
 class CustomUser(AbstractUser):
     SEX = (
         ('M', 'Чоловіча'),
@@ -13,6 +14,7 @@ class CustomUser(AbstractUser):
     sex = models.CharField("sex", max_length=1, choices=SEX, default='A')
     email = models.EmailField(unique=True)
     birthDate = models.DateField("birthDate", default=date.today)
+    is_online = models.BooleanField(blank=False, default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'password']
