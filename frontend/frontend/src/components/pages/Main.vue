@@ -25,12 +25,14 @@
         <input type="number" id="entertainment" v-model="budget.entertainment" required>
         
         <v-btn @click="submitBudget">Розпланувати</v-btn>
+        <v-btn href="/chat" @click="goToChat">Чат</v-btn><br><br>
       </form>
 
       <div class="additional-buttons">
         <v-btn href="/profile" @click="goToProfile">Профіль</v-btn>
         <v-btn href="/about" @click="goToAbout">Про додаток</v-btn>
         <v-btn href="/login" @click="goToLogin">Вийти</v-btn>
+      
       </div>
     </div>
   </template>
