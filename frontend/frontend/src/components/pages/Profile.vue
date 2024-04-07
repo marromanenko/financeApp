@@ -24,8 +24,8 @@
         </tr>
       </table>
       <div class="additional-buttons">
-      <v-btn href="/login" @click="goToLogin">Вийти</v-btn>
-      <v-btn href="javascript: history.go(-1)">Назад</v-btn>
+      <v-btn id="login" href="/login" @click="goToLogin">Вийти</v-btn>
+      <v-btn id="back" href="javascript: history.go(-1)">Назад</v-btn>
     </div>
     </div>
   </template>
@@ -33,11 +33,10 @@
   <script>
 import router from '../../router';
 import axios from 'axios';
-import swal from 'sweetalert2';
   export default {
     data: () => ({
         userData: {
-          name: 'asd',
+          name: '',
           email: '',
           gender: '',
           dob: ''
