@@ -21,7 +21,7 @@
       <label for="birthDate">Дата народження:</label>
       <input type="date" id="birthDate" v-model="formData.birthDate" required>
       
-      <input type="submit" value="Зареєструватися">
+      <input id="submit" type="submit" value="Зареєструватися">
     </form>
   </div>
 </template>
@@ -49,16 +49,12 @@ export default {
         const response = await axios.post('http://127.0.0.1:8000/register/', this.formData);
         console.log('Registration successful:', response.data);
         localStorage.setItem('token', response.data['token'])
-        // Optionally, you can reset the form after successful registration
-        // this.resetForm();
-        router.push('/')
+        router.push('/main')
       } catch (error) {
         console.error('Error during registration:', error);
-        // Handle error scenarios as needed
       }
     },
     resetForm() {
-      // Reset form fields
       this.formData.username = '';
       this.formData.email = '';
       this.formData.password = '';
