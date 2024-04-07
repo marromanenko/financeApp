@@ -8,7 +8,7 @@
         <label for="password">Пароль:</label>
         <input type="password" id="password" v-model="password" required>
         
-        <input type="submit" value="Увійти">
+        <input id="enter" type="submit" value="Увійти">
       </form>
     </div>
 </template>
@@ -16,7 +16,6 @@
 <script>
 import router from '../../router';
 import axios from 'axios';
-import swal from 'sweetalert2';
 
 export default {
   data() {
@@ -35,6 +34,7 @@ export default {
         console.log('Login successful:', response.data);
         localStorage.setItem('token', response.data['token'])
         localStorage.setItem('user_id', response.data['id'])
+        localStorage.setItem('username', response.data['username'])
 
         const config = {
                 headers: { 'Authorization': 'Token ' + response.data['token'],
@@ -42,7 +42,6 @@ export default {
                         }
                 };
         const request1 = await axios.get("http://127.0.0.1:8000/api/accomodations/", config)
-
         localStorage.setItem('accomodations', JSON.stringify(request1.data))
 
         const request2 = await axios.get("http://127.0.0.1:8000/api/transports/", config)
