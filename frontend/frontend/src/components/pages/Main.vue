@@ -24,14 +24,14 @@
         <label for="entertainment">Розваги та дозвілля:</label>
         <input type="number" id="entertainment" v-model="budget.entertainment" required>
         
-        <v-btn @click="submitBudget">Розпланувати</v-btn>
-        <v-btn href="/chat" @click="goToChat">Чат</v-btn><br><br>
+        <v-btn id="main" @click="submitBudget">Розпланувати</v-btn>
+        <v-btn id ="chat" href="/chat" @click="goToChat">Чат</v-btn><br><br>
       </form>
 
       <div class="additional-buttons">
-        <v-btn href="/profile" @click="goToProfile">Профіль</v-btn>
-        <v-btn href="/about" @click="goToAbout">Про додаток</v-btn>
-        <v-btn href="/login" @click="goToLogin">Вийти</v-btn>
+        <v-btn id="profile" href="/profile" @click="goToProfile">Профіль</v-btn>
+        <v-btn id="about" href="/about" @click="goToAbout">Про додаток</v-btn>
+        <v-btn id="login" href="/login" @click="goToLogin">Вийти</v-btn>
       
       </div>
     </div>
@@ -70,8 +70,8 @@ import swal from 'sweetalert2';
     },
     methods: {
       checkInfo() {
-        console.log(this.budget.transportation) // id
-        console.log(this.budget.housing) // id
+        console.log(this.budget.transportation) 
+        console.log(this.budget.housing)
       },
       async submitBudget() {
         console.log('Budget submitted:', this.budget)
