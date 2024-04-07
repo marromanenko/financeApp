@@ -6,8 +6,8 @@
     
     <div class="additional-buttons">
 
-    <v-btn href="/login" @click="goToLogin">Вийти</v-btn>
-    <v-btn href="javascript: history.go(-1)">Назад</v-btn>
+    <v-btn id="exit" href="/login" @click="goToLogin">Вийти</v-btn>
+    <v-btn id="back" href="javascript: history.go(-1)">Назад</v-btn>
   </div>
   </div>
 </template>
