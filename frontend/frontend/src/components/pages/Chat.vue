@@ -21,13 +21,13 @@
   <br><br><br>
             <div class="field">
               <div class="control">
-                <input class="input" type="text" placeholder="Message" v-model="newMessage">
+                <input id="input" class="input" type="text" placeholder="Message" v-model="newMessage">
               </div>
             </div>
   
             <div class="field">
               <div class="control">
-                <a class="button is-info" @click="sendMessage">Submit</a>
+                <a id="submit" class="button is-info" @click="sendMessage">Submit</a>
               </div>
             </div>
   
@@ -55,7 +55,6 @@ import axios from 'axios';
       }
     },
     async mounted() {
-        // var success = this.checkLoggedIn();
         var success = true;
         if (success) {
             try {
@@ -156,6 +155,3 @@ import axios from 'axios';
     }
   }
   </script>
-
- 
-  
