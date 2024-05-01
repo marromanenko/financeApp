@@ -5,13 +5,9 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import CustomUser, Transport, Accomodation
 from .serializers import CustomUserSerializer, TransportSerializer, AccomodationSerializer
 from rest_framework.permissions import IsAuthenticated
-
-
-class CustomUserViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated, ]
-
+from django.http import JsonResponse
+from celery.result import AsyncResult
+import json
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 from .models import CustomUser
@@ -21,6 +17,45 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserRegisterSerializer
 from .serializers import UserLoginSerializer
+from django.http import QueryDict
+from .tasks import send_email_task, loop_task
+
+
+def run_long_task(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        l = body['l']
+        task = loop.delay(l)
+        return JsonResponse({"task_id": task.id}, status=202)
+
+
+def task_status(request, task_id):
+    task = AsyncResult(task_id)
+    if task.state == 'FAILURE' or task.state == 'PENDING':
+        response = {
+            'task_id': task_id,
+            'state': task.state,
+            'progression': "None",
+            'info': str(task.info)
+        }
+        return JsonResponse(response, status=200)
+    current = task.info.get('current', 0)
+    total = task.info.get('total', 1)
+    progression = (int(current) / int(total)) * 100
+    response = {
+        'task_id': task_id,
+        'state': task.state,
+        'progression': progression,
+        'info': "None"
+    }
+    return JsonResponse(response, status=200)
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated, ]
 
 
 class UserLoginAPIView(APIView):
@@ -128,6 +163,7 @@ class ProfileView(APIView):
                  "dob": user.birthDate}
         return Response(info)
 
+
 class ComputeView(APIView):
 
     def post(self, request):
@@ -145,7 +181,39 @@ class ComputeView(APIView):
             info = {"result": "success"}
         else:
             info = {"result": "error"}
-
-
-
         return Response(info)
+
+
+class SendMessageView(APIView):
+
+    def post(self, request):
+        try:
+            json_repr = json.loads(request.body)
+        except:
+            json_repr = QueryDict(request.body)
+        to_email = json_repr['email']
+        message = json_repr['message']
+
+        if send_email_task.apply_async(args=[to_email, message], queue='firstqueue'):
+            info = {"result": 'success'}
+            return Response(info, status=status.HTTP_200_OK)
+        else:
+            info = {"result": 'error'}
+            return Response(info, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LongTaskView(APIView):
+
+    def post(self, request):
+        try:
+            json_repr = json.loads(request.body)
+        except:
+            json_repr = QueryDict(request.body)
+        longValue = json_repr['l']
+
+        if loop_task.apply_async(args=[longValue], queue='secondqueue'):
+            info = {"result": 'success'}
+            return Response(info, status=status.HTTP_200_OK)
+        else:
+            info = {"result": 'error'}
+            return Response(info, status=status.HTTP_400_BAD_REQUEST)
