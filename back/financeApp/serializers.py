@@ -7,7 +7,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        exclude = ('password', 'groups', 'is_staff', 'is_superuser', 'last_login', 'user_permissions', 'is_active', 'date_joined')
+        exclude = ('password', 'groups', 'is_staff', 'last_login', 'user_permissions', 'is_active', 'date_joined')
         extra_kwargs = {"course": {"required": False, "allow_null": True}}
 
 
