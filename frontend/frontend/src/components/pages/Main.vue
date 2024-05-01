@@ -87,6 +87,14 @@ import swal from 'sweetalert2';
         const traRes = await axios.get("http://127.0.0.1:8000/api/transports/" + this.budget.transportation + "/", config)
         const amountForTransport = traRes.data['amount']
 
+        if (this.budget.utilities/50>30) axios.post("http://127.0.0.1:8000/long_task/", {"l":30}, config)
+        else axios.post("http://127.0.0.1:8000/long_task/", {"l":this.budget.utilities/50}, config)
+
+        var json_to_send = {
+            email: localStorage.getItem('email'),
+            message: ""
+          }
+
         if(balance-amountForAccomodation-amountForTransport-this.budget.utilities-this.budget.food-this.budget.entertainment > 0){
           swal.fire({
                   type: 'success',
@@ -95,6 +103,7 @@ import swal from 'sweetalert2';
                   showConfirmButton:true,
                   icon: "success"
                 })
+          json_to_send.message = 'Ви вкладаєтесь в бюджет'
         } else {
           swal.fire({
                   type: 'error',
@@ -103,7 +112,10 @@ import swal from 'sweetalert2';
                   showConfirmButton:true,
                   icon: "error"
                 })
+          json_to_send.message = 'Ви не вкладаєтесь в бюджет'
         }
+
+        axios.post("http://127.0.0.1:8000/send_message/", json_to_send, config)
 
       },
       goToProfile() {
@@ -183,4 +195,3 @@ import swal from 'sweetalert2';
     justify-content: space-between;
   }
   </style>
-  
