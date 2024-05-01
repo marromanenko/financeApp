@@ -145,4 +145,3 @@ import axios from 'axios';
     justify-content: space-between;
   }
   </style>
-  
