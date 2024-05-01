@@ -5,6 +5,8 @@ import Register from "../components/pages/Register.vue"
 import About from "../components/pages/About.vue"
 import Main from "../components/pages/Main.vue"
 import Profile from "../components/pages/Profile.vue"
+import Chat from "../components/pages/Chat.vue"
+import Result from "../components/pages/Result.vue";
 
 Vue.use(VueRouter);
 
@@ -33,6 +35,16 @@ const routes = [
     path: "/profile",
     name: "profile-page",
     component: Profile
+  },
+  {
+    path: "/chat",
+    name: "chat-page",
+    component: Chat
+  },
+  {
+    path: "/result",
+    name: "result",
+    component: Result
   }
 ];
 
