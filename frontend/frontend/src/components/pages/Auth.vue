@@ -35,6 +35,7 @@ export default {
         localStorage.setItem('token', response.data['token'])
         localStorage.setItem('user_id', response.data['id'])
         localStorage.setItem('username', response.data['username'])
+        localStorage.setItem('email', this.email)
 
         const config = {
                 headers: { 'Authorization': 'Token ' + response.data['token'],
@@ -46,6 +47,9 @@ export default {
 
         const request2 = await axios.get("http://127.0.0.1:8000/api/transports/", config)
         localStorage.setItem('transports', JSON.stringify(request2.data))
+
+        const request3 = await axios.get("http://127.0.0.1:8000/api/users/" + localStorage.getItem('user_id'), config)
+        localStorage.setItem('is_superuser', request3.data['is_superuser'])
 
         router.push('/main')
       } catch (error) {
